@@ -1,0 +1,15 @@
+select 
+  department_name,
+  name,
+  salary
+from (
+  select
+    d.department_name,
+    e.name,
+    e.salary,
+    dense_rank() over(partition by d.department_name order by e.salary desc) as dns_rank
+  from department d
+  join employee e
+  on d.department_id = e.department_id
+) as temp_table
+where dns_rank <= 3;
