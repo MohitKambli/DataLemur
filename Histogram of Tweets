@@ -1,0 +1,12 @@
+select
+  tweets_count_per_user as tweet_bucket,
+  count(user_id) as users_num
+from (
+  select
+    user_id,
+    count(tweet_id) as tweets_count_per_user
+  from tweets
+  where date_part('year', tweet_date) = 2022
+  group by user_id
+) as temp_table
+group by tweet_bucket;
