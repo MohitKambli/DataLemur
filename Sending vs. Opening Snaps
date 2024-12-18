@@ -1,0 +1,31 @@
+with cte as (
+  select
+    ab.age_bucket,
+    sum(
+      case
+        when a.activity_type = 'send'
+          then a.time_spent
+        else
+          0
+      end
+    ) as send_timespent,
+    sum(
+      case
+        when a.activity_type = 'open'
+          then a.time_spent
+        else
+          0
+      end
+    ) as open_timespent,
+    sum(a.time_spent) as total_timespent
+  from age_breakdown ab
+  inner join activities a
+  on ab.user_id = a.user_id
+  where a.activity_type in ('send', 'open')
+  group by ab.age_bucket
+)
+select
+  age_bucket,
+  round((send_timespent * 100) / total_timespent, 2) as send_perc,
+  round((open_timespent * 100) / total_timespent, 2) as open_perc
+from cte;
